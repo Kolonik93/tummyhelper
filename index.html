@@ -9,6 +9,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Cooper+Black&display=swap" rel="stylesheet">
 
 <style>
+  @font-face {
+  font-family: "CooperBlack";
+  src: url("cooper-black.woff2") format("woff2"),
+       url("cooper-black.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
   :root {
     --ink: #2E5A32;          /* Pet Sounds forest green */
     --muted: #5A4A3A;        /* warm brown */
@@ -52,7 +59,7 @@
   }
 
   h1 {
-    font-family: "Cooper Hewitt", sans-serif;
+    font-family: "CooperBlack", serif;
     font-size: clamp(64px, 14vw, 88px);
     margin: 0 0 24px;
     line-height: 1.15;
