@@ -144,12 +144,12 @@
   }
   #pickBtn:hover, #againBtn:hover { background: var(--accent-dark); }
 
-  #addBtn {
+  #calorieBtn, #crazyBtn {
     background: var(--accent-2);
     color: #fff;
     box-shadow: 0 6px 16px rgba(63, 125, 107, 0.30);
   }
-  #addBtn:hover { background: var(--accent-2-dark); }
+  #calorieBtn:hover, #crazyBtn:hover { background: var(--accent-2-dark); }
 
   footer {
     margin-top: 22px;
@@ -170,11 +170,12 @@
       <div class="actions">
         <button id="pickBtn">🎲 Pick Dinner</button>
         <button id="againBtn">🔁 Pick Again</button>
-        <button id="addBtn">➕ Add Option</button>
+        <button id="calorieBtn">🏃 I have a calorie goal</button>
+        <button id="crazyBtn">😂 Is that crazy?!</button>
       </div>
     </div>
 
-    <footer>Your dinner list is saved on this device.</footer>
+    <footer>Your dinner choices are saved on this device.</footer>
   </div>
 
 <script>
@@ -228,16 +229,28 @@
   const SPIN_DURATION_MS = 900;
   const SPIN_FLIP_MS = 90;
 
-  function pickDinner() {
+  function pickDinner(filterHealthy = null) {
     if (dinners.length === 0) {
       resultEl.classList.remove("pop", "spinning");
       resultEl.classList.add("placeholder");
-      resultEl.textContent = "Add some options first!";
+      resultEl.textContent = "No options available!";
       characterEl.textContent = "";
       return;
     }
 
-    const finalChoice = dinners[Math.floor(Math.random() * dinners.length)];
+    let filteredDinners = dinners;
+    if (filterHealthy !== null) {
+      filteredDinners = dinners.filter((d) => d.healthy === filterHealthy);
+      if (filteredDinners.length === 0) {
+        resultEl.classList.remove("pop", "spinning");
+        resultEl.classList.add("placeholder");
+        resultEl.textContent = filterHealthy ? "No healthy options!" : "No indulgent options!";
+        characterEl.textContent = "";
+        return;
+      }
+    }
+
+    const finalChoice = filteredDinners[Math.floor(Math.random() * filteredDinners.length)];
 
     resultEl.classList.remove("placeholder", "pop");
     characterEl.classList.remove("pop");
@@ -245,7 +258,7 @@
     characterEl.textContent = "";
 
     const spinInterval = setInterval(() => {
-      const flash = dinners[Math.floor(Math.random() * dinners.length)];
+      const flash = filteredDinners[Math.floor(Math.random() * filteredDinners.length)];
       resultEl.textContent = flash.name;
     }, SPIN_FLIP_MS);
 
@@ -262,18 +275,10 @@
     }, SPIN_DURATION_MS);
   }
 
-  function addDinner() {
-    const newItem = prompt("Add a new dinner option:");
-    if (newItem && newItem.trim()) {
-      const healthy = confirm("Is this a healthy option?\nOK = healthy, Cancel = not so healthy");
-      dinners.push({ name: newItem.trim(), healthy });
-      saveDinners();
-    }
-  }
-
-  document.getElementById("pickBtn").onclick = pickDinner;
-  document.getElementById("againBtn").onclick = pickDinner;
-  document.getElementById("addBtn").onclick = addDinner;
+  document.getElementById("pickBtn").onclick = () => pickDinner();
+  document.getElementById("againBtn").onclick = () => pickDinner();
+  document.getElementById("calorieBtn").onclick = () => pickDinner(true);
+  document.getElementById("crazyBtn").onclick = () => pickDinner(false);
 </script>
 </body>
 </html>
