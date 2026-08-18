@@ -151,49 +151,6 @@
   }
   #addBtn:hover { background: var(--accent-2-dark); }
 
-  .list-section {
-    margin-top: 28px;
-    text-align: left;
-  }
-
-  .list-title {
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    margin-bottom: 10px;
-  }
-
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .chip {
-    background: var(--chip);
-    color: var(--ink);
-    padding: 7px 14px;
-    border-radius: 999px;
-    font-size: 14px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .chip button.remove {
-    background: none;
-    border: none;
-    color: var(--muted);
-    font-size: 14px;
-    line-height: 1;
-    padding: 0;
-    cursor: pointer;
-    font-weight: 700;
-  }
-  .chip button.remove:hover { color: var(--accent-dark); }
-
   footer {
     margin-top: 22px;
     font-size: 13px;
@@ -215,14 +172,9 @@
         <button id="againBtn">🔁 Pick Again</button>
         <button id="addBtn">➕ Add Option</button>
       </div>
-
-      <div class="list-section">
-        <div class="list-title">All options</div>
-        <div id="list" class="chips"></div>
-      </div>
     </div>
 
-    <footer>Your list is saved on this device.</footer>
+    <footer>Your dinner list is saved on this device.</footer>
   </div>
 
 <script>
@@ -254,7 +206,6 @@
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
       if (Array.isArray(saved) && saved.length > 0) {
-        // Migrate older saves that stored plain strings.
         return saved.map((item) =>
           typeof item === "string" ? { name: item, healthy: false } : item
         );
@@ -271,7 +222,6 @@
 
   const resultEl = document.getElementById("result");
   const characterEl = document.getElementById("character");
-  const listEl = document.getElementById("list");
 
   const HEALTHY_CHARACTER = "🏃‍♂️✨";
   const LESS_HEALTHY_CHARACTER = "😴🍔";
@@ -312,44 +262,18 @@
     }, SPIN_DURATION_MS);
   }
 
-  function renderList() {
-    listEl.innerHTML = "";
-    dinners.forEach((dinner, i) => {
-      const chip = document.createElement("span");
-      chip.className = "chip";
-      const label = document.createElement("span");
-      label.textContent = `${dinner.healthy ? "🥗" : "🍔"} ${dinner.name}`;
-      const remove = document.createElement("button");
-      remove.className = "remove";
-      remove.type = "button";
-      remove.textContent = "✕";
-      remove.setAttribute("aria-label", `Remove ${dinner.name}`);
-      remove.onclick = () => {
-        dinners.splice(i, 1);
-        saveDinners();
-        renderList();
-      };
-      chip.appendChild(label);
-      chip.appendChild(remove);
-      listEl.appendChild(chip);
-    });
-  }
-
   function addDinner() {
     const newItem = prompt("Add a new dinner option:");
     if (newItem && newItem.trim()) {
       const healthy = confirm("Is this a healthy option?\nOK = healthy, Cancel = not so healthy");
       dinners.push({ name: newItem.trim(), healthy });
       saveDinners();
-      renderList();
     }
   }
 
   document.getElementById("pickBtn").onclick = pickDinner;
   document.getElementById("againBtn").onclick = pickDinner;
   document.getElementById("addBtn").onclick = addDinner;
-
-  renderList();
 </script>
 </body>
 </html>
