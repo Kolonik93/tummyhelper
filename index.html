@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>What's for Dinner?</title>
+<style>
+  :root {
+    --bg: #fdf6ec;
+    --card: #ffffff;
+    --ink: #2d2a26;
+    --muted: #8a8178;
+    --accent: #e0693f;
+    --accent-dark: #c44f28;
+    --accent-2: #3f7d6b;
+    --accent-2-dark: #2f5f52;
+    --chip: #f3ece0;
+    --shadow: 0 10px 30px rgba(45, 42, 38, 0.08);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(224, 105, 63, 0.10), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(63, 125, 107, 0.12), transparent 45%),
+      var(--bg);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+  }
+
+  .eyebrow {
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 12px;
+    color: var(--accent-dark);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 6vw, 38px);
+    margin: 0 0 24px;
+    line-height: 1.15;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 32px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result {
+    font-size: clamp(26px, 7vw, 34px);
+    font-weight: 700;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+  }
+
+  .result.placeholder {
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 18px;
+  }
+
+  .result.pop {
+    animation: pop 0.35s ease;
+  }
+
+  @keyframes pop {
+    0% { transform: scale(0.85); opacity: 0; }
+    60% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+
+  .result.spinning {
+    animation: wheelSpin 0.09s linear infinite;
+    color: var(--muted);
+  }
+
+  @keyframes wheelSpin {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(3deg) scale(1.03); }
+    100% { transform: rotate(0deg) scale(1); }
+  }
+
+  .character {
+    font-size: 40px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 4px;
+  }
+
+  .character.pop {
+    animation: pop 0.35s ease;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 26px;
+  }
+
+  button {
+    border: none;
+    border-radius: 999px;
+    padding: 13px 22px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  }
+
+  button:active {
+    transform: translateY(1px) scale(0.98);
+  }
+
+  #pickBtn, #againBtn {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(224, 105, 63, 0.35);
+  }
+  #pickBtn:hover, #againBtn:hover { background: var(--accent-dark); }
+
+  #addBtn {
+    background: var(--accent-2);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(63, 125, 107, 0.30);
+  }
+  #addBtn:hover { background: var(--accent-2-dark); }
+
+  .list-section {
+    margin-top: 28px;
+    text-align: left;
+  }
+
+  .list-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .chip {
+    background: var(--chip);
+    color: var(--ink);
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .chip button.remove {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+    font-weight: 700;
+  }
+  .chip button.remove:hover { color: var(--accent-dark); }
+
+  footer {
+    margin-top: 22px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+  <div class="app">
+    <div class="eyebrow">Dinner Chooser</div>
+    <h1>What's for dinner tonight?</h1>
+
+    <div class="card">
+      <div id="result" class="result placeholder">Tap "Pick Dinner" to begin</div>
+      <div id="character" class="character"></div>
+
+      <div class="actions">
+        <button id="pickBtn">🎲 Pick Dinner</button>
+        <button id="againBtn">🔁 Pick Again</button>
+        <button id="addBtn">➕ Add Option</button>
+      </div>
+
+      <div class="list-section">
+        <div class="list-title">All options</div>
+        <div id="list" class="chips"></div>
+      </div>
+    </div>
+
+    <footer>Your list is saved on this device.</footer>
+  </div>
+
+<script>
+  const STORAGE_KEY = "dinnerOptions";
+  const defaultDinners = [
+    { name: "Sweetgreen", healthy: true },
+    { name: "Mendocino Farms", healthy: true },
+    { name: "Hawaiian (JJ's)", healthy: true },
+    { name: "Sushi (Mikunis, Noaki, Fuji)", healthy: true },
+    { name: "IN N OUT", healthy: false },
+    { name: "The Habit", healthy: false },
+    { name: "Okie Dokies", healthy: false },
+    { name: "Burmese", healthy: false },
+    { name: "Tres Hermanas", healthy: false },
+    { name: "Chitas", healthy: false },
+    { name: "Tacos 65", healthy: false },
+    { name: "Taqueria Jalisco", healthy: false },
+    { name: "Shake Shack", healthy: false },
+    { name: "McDonalds", healthy: false },
+    { name: "Panda Express", healthy: false },
+    { name: "Del Taco", healthy: false },
+    { name: "Chipotle", healthy: false },
+    { name: "Willie's", healthy: false },
+    { name: "Jimboys", healthy: false },
+    { name: "Taco Bell", healthy: false }
+  ];
+
+  function loadDinners() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (Array.isArray(saved) && saved.length > 0) {
+        // Migrate older saves that stored plain strings.
+        return saved.map((item) =>
+          typeof item === "string" ? { name: item, healthy: false } : item
+        );
+      }
+    } catch (e) {}
+    return defaultDinners.map((d) => ({ ...d }));
+  }
+
+  let dinners = loadDinners();
+
+  function saveDinners() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dinners));
+  }
+
+  const resultEl = document.getElementById("result");
+  const characterEl = document.getElementById("character");
+  const listEl = document.getElementById("list");
+
+  const HEALTHY_CHARACTER = "🏃‍♂️✨";
+  const LESS_HEALTHY_CHARACTER = "😴🍔";
+  const SPIN_DURATION_MS = 900;
+  const SPIN_FLIP_MS = 90;
+
+  function pickDinner() {
+    if (dinners.length === 0) {
+      resultEl.classList.remove("pop", "spinning");
+      resultEl.classList.add("placeholder");
+      resultEl.textContent = "Add some options first!";
+      characterEl.textContent = "";
+      return;
+    }
+
+    const finalChoice = dinners[Math.floor(Math.random() * dinners.length)];
+
+    resultEl.classList.remove("placeholder", "pop");
+    characterEl.classList.remove("pop");
+    resultEl.classList.add("spinning");
+    characterEl.textContent = "";
+
+    const spinInterval = setInterval(() => {
+      const flash = dinners[Math.floor(Math.random() * dinners.length)];
+      resultEl.textContent = flash.name;
+    }, SPIN_FLIP_MS);
+
+    setTimeout(() => {
+      clearInterval(spinInterval);
+      resultEl.classList.remove("spinning");
+      void resultEl.offsetWidth;
+      resultEl.textContent = finalChoice.name;
+      resultEl.classList.add("pop");
+      characterEl.textContent = finalChoice.healthy
+        ? HEALTHY_CHARACTER
+        : LESS_HEALTHY_CHARACTER;
+      characterEl.classList.add("pop");
+    }, SPIN_DURATION_MS);
+  }
+
+  function renderList() {
+    listEl.innerHTML = "";
+    dinners.forEach((dinner, i) => {
+      const chip = document.createElement("span");
+      chip.className = "chip";
+      const label = document.createElement("span");
+      label.textContent = `${dinner.healthy ? "🥗" : "🍔"} ${dinner.name}`;
+      const remove = document.createElement("button");
+      remove.className = "remove";
+      remove.type = "button";
+      remove.textContent = "✕";
+      remove.setAttribute("aria-label", `Remove ${dinner.name}`);
+      remove.onclick = () => {
+        dinners.splice(i, 1);
+        saveDinners();
+        renderList();
+      };
+      chip.appendChild(label);
+      chip.appendChild(remove);
+      listEl.appendChild(chip);
+    });
+  }
+
+  function addDinner() {
+    const newItem = prompt("Add a new dinner option:");
+    if (newItem && newItem.trim()) {
+      const healthy = confirm("Is this a healthy option?\nOK = healthy, Cancel = not so healthy");
+      dinners.push({ name: newItem.trim(), healthy });
+      saveDinners();
+      renderList();
+    }
+  }
+
+  document.getElementById("pickBtn").onclick = pickDinner;
+  document.getElementById("againBtn").onclick = pickDinner;
+  document.getElementById("addBtn").onclick = addDinner;
+
+  renderList();
+</script>
+</body>
+</html>
