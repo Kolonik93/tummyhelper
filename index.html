@@ -180,36 +180,43 @@
 
 <script>
   const STORAGE_KEY = "dinnerOptions";
+  
+  const calorieGoal = [
+    "IN N OUT",
+    "The Habit",
+    "Burmese",
+    "Chitas",
+    "Taqueria Jalisco",
+    "Mendocino Farms",
+    "Sweetgreen",
+    "Shake Shack",
+    "McDonalds",
+    "Chipotle",
+    "Jimboys",
+    "Taco Bell"
+  ];
+
+  const crazyOptions = [
+    "Hawaiian (JJ's)",
+    "Panda Express",
+    "Willie's",
+    "Okie Dokies",
+    "Sushi (Mikunis, Noaki, Fuji)",
+    "Del Taco",
+    "Tres Hermanas",
+    "Tacos 65"
+  ];
+
   const defaultDinners = [
-    { name: "Sweetgreen", healthy: true },
-    { name: "Mendocino Farms", healthy: true },
-    { name: "Hawaiian (JJ's)", healthy: true },
-    { name: "Sushi (Mikunis, Noaki, Fuji)", healthy: true },
-    { name: "IN N OUT", healthy: false },
-    { name: "The Habit", healthy: false },
-    { name: "Okie Dokies", healthy: false },
-    { name: "Burmese", healthy: false },
-    { name: "Tres Hermanas", healthy: false },
-    { name: "Chitas", healthy: false },
-    { name: "Tacos 65", healthy: false },
-    { name: "Taqueria Jalisco", healthy: false },
-    { name: "Shake Shack", healthy: false },
-    { name: "McDonalds", healthy: false },
-    { name: "Panda Express", healthy: false },
-    { name: "Del Taco", healthy: false },
-    { name: "Chipotle", healthy: false },
-    { name: "Willie's", healthy: false },
-    { name: "Jimboys", healthy: false },
-    { name: "Taco Bell", healthy: false }
+    ...calorieGoal.map(name => ({ name, category: "calorie" })),
+    ...crazyOptions.map(name => ({ name, category: "crazy" }))
   ];
 
   function loadDinners() {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
       if (Array.isArray(saved) && saved.length > 0) {
-        return saved.map((item) =>
-          typeof item === "string" ? { name: item, healthy: false } : item
-        );
+        return saved;
       }
     } catch (e) {}
     return defaultDinners.map((d) => ({ ...d }));
@@ -225,11 +232,11 @@
   const characterEl = document.getElementById("character");
 
   const HEALTHY_CHARACTER = "🏃‍♂️✨";
-  const LESS_HEALTHY_CHARACTER = "😴🍔";
+  const LESS_HEALTHY_CHARACTER = "😂🍔";
   const SPIN_DURATION_MS = 900;
   const SPIN_FLIP_MS = 90;
 
-  function pickDinner(filterHealthy = null) {
+  function pickDinner(filterCategory = null) {
     if (dinners.length === 0) {
       resultEl.classList.remove("pop", "spinning");
       resultEl.classList.add("placeholder");
@@ -239,12 +246,12 @@
     }
 
     let filteredDinners = dinners;
-    if (filterHealthy !== null) {
-      filteredDinners = dinners.filter((d) => d.healthy === filterHealthy);
+    if (filterCategory !== null) {
+      filteredDinners = dinners.filter((d) => d.category === filterCategory);
       if (filteredDinners.length === 0) {
         resultEl.classList.remove("pop", "spinning");
         resultEl.classList.add("placeholder");
-        resultEl.textContent = filterHealthy ? "No healthy options!" : "No indulgent options!";
+        resultEl.textContent = filterCategory === "calorie" ? "No calorie options!" : "No crazy options!";
         characterEl.textContent = "";
         return;
       }
@@ -268,7 +275,7 @@
       void resultEl.offsetWidth;
       resultEl.textContent = finalChoice.name;
       resultEl.classList.add("pop");
-      characterEl.textContent = finalChoice.healthy
+      characterEl.textContent = finalChoice.category === "calorie"
         ? HEALTHY_CHARACTER
         : LESS_HEALTHY_CHARACTER;
       characterEl.classList.add("pop");
@@ -277,8 +284,8 @@
 
   document.getElementById("pickBtn").onclick = () => pickDinner();
   document.getElementById("againBtn").onclick = () => pickDinner();
-  document.getElementById("calorieBtn").onclick = () => pickDinner(true);
-  document.getElementById("crazyBtn").onclick = () => pickDinner(false);
+  document.getElementById("calorieBtn").onclick = () => pickDinner("calorie");
+  document.getElementById("crazyBtn").onclick = () => pickDinner("crazy");
 </script>
 </body>
 </html>
