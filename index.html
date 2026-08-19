@@ -5,26 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Shouldn't it be rice??</title>
 
-<!-- Pet Sounds-style font -->
-<link href="https://fonts.googleapis.com/css2?family=Cooper+Black&display=swap" rel="stylesheet">
-
 <style>
   @font-face {
-  font-family: "Cooper Black";
-  src: url("cooper-black.woff2") format("woff2"),
-       url("cooper-black.woff") format("woff");
-  font-weight: normal;
-  font-style: normal;
-}
+    font-family: "Cooper Black";
+    src: url("cooper-black.woff2") format("woff2"),
+         url("cooper-black.woff") format("woff");
+    font-weight: normal;
+    font-style: normal;
+  }
+
   :root {
-    --ink: #2E5A32;          /* Pet Sounds forest green */
-    --muted: #5A4A3A;        /* warm brown */
-    --accent: #C7D36F;       /* yellow-green */
-    --accent-dark: #A8B85A;  /* darker yellow-green */
-    --accent-2: #F2C94C;     /* golden yellow */
+    --ink: #2E5A32;
+    --muted: #5A4A3A;
+    --accent: #C7D36F;
+    --accent-dark: #A8B85A;
+    --accent-2: #F2C94C;
     --accent-2-dark: #D4A93E;
     --shadow: 0 10px 30px rgba(46, 90, 50, 0.18);
-    --cream: #FFF8E1;        /* Pet Sounds cream */
+    --cream: #FFF8E1;
   }
 
   * { box-sizing: border-box; }
@@ -54,20 +52,16 @@
     color: var(--accent-dark);
     font-weight: 700;
     margin-bottom: 6px;
-    position: relative;
-    z-index: 2;
   }
 
   h1 {
     font-family: "Cooper Black", serif;
-    font-weight: 900; /* force heavy bold */
+    font-weight: 900;
     font-size: clamp(64px, 14vw, 88px);
     margin: 0 0 24px;
     line-height: 1.15;
     color: var(--ink);
     text-shadow: 4px 4px var(--accent-2);
-    position: relative;
-    z-index: 2;
   }
 
   .card {
@@ -84,18 +78,11 @@
   .card::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 248, 225, 0.75); /* Pet Sounds cream overlay */
-    z-index: 1;
+    inset: 0;
+    background: rgba(255, 248, 225, 0.75);
   }
 
-  .card > * {
-    position: relative;
-    z-index: 2;
-  }
+  .card > * { position: relative; }
 
   .result {
     font-size: clamp(26px, 7vw, 34px);
@@ -138,14 +125,18 @@
   .character {
     font-size: 40px;
     min-height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     margin-top: 4px;
   }
 
   .character.pop {
     animation: pop 0.35s ease;
+  }
+
+  .calories {
+    margin-top: 4px;
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--muted);
   }
 
   .actions {
@@ -171,11 +162,11 @@
     transform: translateY(1px) scale(0.98);
   }
 
-  #pickBtn, #againBtn {
+  #pickBtn {
     background: var(--accent);
     box-shadow: 0 6px 16px rgba(199, 211, 111, 0.35);
   }
-  #pickBtn:hover, #againBtn:hover { background: var(--accent-dark); }
+  #pickBtn:hover { background: var(--accent-dark); }
 
   #calorieBtn, #crazyBtn {
     background: var(--accent-2);
@@ -187,8 +178,91 @@
     margin-top: 22px;
     font-size: 13px;
     color: var(--muted);
-    position: relative;
-    z-index: 2;
+  }
+
+  /* Danger pulse */
+  .danger {
+    animation: dangerPulse 0.6s ease-in-out 3;
+    color: #B00020;
+  }
+
+  @keyframes dangerPulse {
+    0%   { transform: scale(1); color: #B00020; }
+    25%  { transform: scale(1.15); color: #ff3b3b; }
+    50%  { transform: scale(0.9); color: #B00020; }
+    75%  { transform: scale(1.15); color: #ff3b3b; }
+    100% { transform: scale(1); color: #B00020; }
+  }
+
+  /* Flashing background */
+  .danger-flash {
+    animation: flashBG 0.15s alternate 10;
+  }
+
+  @keyframes flashBG {
+    0%   { background-color: rgba(255, 0, 0, 0.25); }
+    100% { background-color: rgba(255, 255, 255, 0.25); }
+  }
+
+  /* Modal */
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+
+  .modal-content {
+    background: #FFF8E1;
+    padding: 24px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+
+  .modal-content p {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  .modal-content button {
+    margin: 0 8px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .yes { background: var(--accent); }
+  .no { background: var(--accent-2); }
+
+  /* History graph */
+  #history {
+    margin-top: 40px;
+    text-align: left;
+  }
+
+  #history h2 {
+    font-family: "Cooper Black";
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+
+  .bar {
+    height: 22px;
+    background: var(--accent);
+    margin: 6px 0;
+    border-radius: 6px;
+    transition: width 0.3s ease;
+  }
+
+  .bar-label {
+    font-size: 14px;
+    margin-bottom: 2px;
   }
 </style>
 </head>
@@ -200,6 +274,7 @@
     <div class="card">
       <div id="result" class="result placeholder">God forbid a white boy get a lil dinner</div>
       <div id="character" class="character"></div>
+      <div id="calories" class="calories"></div>
 
       <div class="actions">
         <button id="pickBtn">Jesus take the wheel</button>
@@ -208,97 +283,129 @@
       </div>
     </div>
 
+    <div id="history">
+      <h2>History</h2>
+      <div id="graph"></div>
+    </div>
+
     <footer>For when you fear you've lost the plot.</footer>
   </div>
 
+  <!-- Confirmation Modal -->
+  <div id="confirmModal" class="modal">
+    <div class="modal-content">
+      <p>Select for dinner?</p>
+      <button id="yesBtn" class="yes">Yes</button>
+      <button id="noBtn" class="no">No</button>
+    </div>
+  </div>
+
 <script>
-  const STORAGE_KEY = "dinnerOptions";
-  
   const calorieGoal = [
-    "IN N OUT 750-970 cal",
-    "The Habit 854-1010 cal",
-    "Burmese 600 cal each person",
-    "Chitas",
-    "Taqueria Jalisco",
-    "Mendocino Farms",
-    "Sweetgreen",
-    "Shake Shack",
-    "McDonalds",
-    "Chipotle",
-    "Jimboys",
-    "Taco Bell"
+    { name: "IN N OUT", calories: 850, category: "calorie" },
+    { name: "The Habit", calories: 700, category: "calorie" },
+    { name: "Burmese", calories: 650, category: "calorie" },
+    { name: "Chitas", calories: 600, category: "calorie" },
+    { name: "Taqueria Jalisco", calories: 750, category: "calorie" },
+    { name: "Mendocino Farms", calories: 550, category: "calorie" },
+    { name: "Sweetgreen", calories: 480, category: "calorie" },
+    { name: "Shake Shack", calories: 820, category: "calorie" },
+    { name: "McDonalds", calories: 650, category: "calorie" },
+    { name: "Chipotle", calories: 720, category: "calorie" },
+    { name: "Jimboys", calories: 780, category: "calorie" },
+    { name: "Taco Bell", calories: 680, category: "calorie" }
   ];
 
   const crazyOptions = [
-    "Hawaiian (JJ's)",
-    "Panda Express",
-    "Willie's",
-    "Okie Dokies",
-    "Sushi (Mikunis, Noaki, Fuji)",
-    "Del Taco",
-    "Tres Hermanas",
-    "Tacos 65"
+    { name: "Hawaiian (JJ's)", calories: 1100, category: "crazy" },
+    { name: "Panda Express", calories: 900, category: "crazy" },
+    { name: "Willie's", calories: 950, category: "crazy" },
+    { name: "Okie Dokies", calories: 1000, category: "crazy" },
+    { name: "Sushi (Mikunis, Noaki, Fuji)", calories: 650, category: "crazy" },
+    { name: "Del Taco", calories: 850, category: "crazy" },
+    { name: "Tres Hermanas", calories: 1050, category: "crazy" },
+    { name: "Tacos 65", calories: 900, category: "crazy" }
   ];
 
-  const defaultDinners = [
-    ...calorieGoal.map(name => ({ name, category: "calorie" })),
-    ...crazyOptions.map(name => ({ name, category: "crazy" }))
-  ];
-
-  function loadDinners() {
-    try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      if (Array.isArray(saved) && saved.length > 0) {
-        return saved;
-      }
-    } catch (e) {}
-    return defaultDinners.map((d) => ({ ...d }));
-  }
-
-  let dinners = loadDinners();
-
-  function saveDinners() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(dinners));
-  }
+  const defaultDinners = [...calorieGoal, ...crazyOptions];
 
   const resultEl = document.getElementById("result");
   const characterEl = document.getElementById("character");
+  const caloriesEl = document.getElementById("calories");
+
+  const confirmModal = document.getElementById("confirmModal");
+  const yesBtn = document.getElementById("yesBtn");
+  const noBtn = document.getElementById("noBtn");
+
+  const dangerSound = new Audio("danger.mp3");
+
+  const graphEl = document.getElementById("graph");
 
   const HEALTHY_CHARACTER = "🏃‍♂️✨";
   const LESS_HEALTHY_CHARACTER = "😂🍔";
   const SPIN_DURATION_MS = 900;
   const SPIN_FLIP_MS = 90;
 
+  // Load history
+  let history = JSON.parse(localStorage.getItem("history")) || {};
+
+  function saveHistory() {
+    localStorage.setItem("history", JSON.stringify(history));
+  }
+
+  function logSelection(name) {
+    const today = new Date().toISOString().split("T")[0];
+
+    if (!history[name]) {
+      history[name] = { count: 1, lastSelected: today };
+    } else {
+      history[name].count++;
+      history[name].lastSelected = today;
+    }
+
+    saveHistory();
+    renderGraph();
+  }
+
+  function renderGraph() {
+    graphEl.innerHTML = "";
+
+    const entries = Object.entries(history).sort((a, b) => b[1].count - a[1].count);
+
+    entries.forEach(([name, data]) => {
+      const label = document.createElement("div");
+      label.className = "bar-label";
+      label.textContent = `${name} — ${data.count} times (last: ${data.lastSelected})`;
+
+      const bar = document.createElement("div");
+      bar.className = "bar";
+      bar.style.width = `${Math.min(data.count * 20, 300)}px`;
+
+      graphEl.appendChild(label);
+      graphEl.appendChild(bar);
+    });
+  }
+
+  renderGraph();
+
   function pickDinner(filterCategory = null) {
-    if (dinners.length === 0) {
-      resultEl.classList.remove("pop", "spinning");
-      resultEl.classList.add("placeholder");
-      resultEl.textContent = "No options available!";
-      characterEl.textContent = "";
-      return;
-    }
+    let filtered = filterCategory
+      ? defaultDinners.filter(d => d.category === filterCategory)
+      : defaultDinners;
 
-    let filteredDinners = dinners;
-    if (filterCategory !== null) {
-      filteredDinners = dinners.filter((d) => d.category === filterCategory);
-      if (filteredDinners.length === 0) {
-        resultEl.classList.remove("pop", "spinning");
-        resultEl.classList.add("placeholder");
-        resultEl.textContent = filterCategory === "calorie" ? "No calorie options!" : "No crazy options!";
-        characterEl.textContent = "";
-        return;
-      }
-    }
+    if (filtered.length === 0) return;
 
-    const finalChoice = filteredDinners[Math.floor(Math.random() * filteredDinners.length)];
+    const finalChoice = filtered[Math.floor(Math.random() * filtered.length)];
 
-    resultEl.classList.remove("placeholder", "pop");
+    resultEl.classList.remove("placeholder", "pop", "danger");
     characterEl.classList.remove("pop");
+    caloriesEl.classList.remove("danger");
+    caloriesEl.textContent = "";
+
     resultEl.classList.add("spinning");
-    characterEl.textContent = "";
 
     const spinInterval = setInterval(() => {
-      const flash = filteredDinners[Math.floor(Math.random() * filteredDinners.length)];
+      const flash = filtered[Math.floor(Math.random() * filtered.length)];
       resultEl.textContent = flash.name;
     }, SPIN_FLIP_MS);
 
@@ -306,12 +413,56 @@
       clearInterval(spinInterval);
       resultEl.classList.remove("spinning");
       void resultEl.offsetWidth;
+
       resultEl.textContent = finalChoice.name;
       resultEl.classList.add("pop");
-      characterEl.textContent = finalChoice.category === "calorie"
-        ? HEALTHY_CHARACTER
-        : LESS_HEALTHY_CHARACTER;
+
+      characterEl.textContent =
+        finalChoice.category === "calorie"
+          ? HEALTHY_CHARACTER
+          : LESS_HEALTHY_CHARACTER;
       characterEl.classList.add("pop");
+
+      caloriesEl.textContent = `${finalChoice.calories} calories`;
+
+      // Danger Zone: requires confirmation
+      if (finalChoice.calories > 1000) {
+        confirmModal.style.display = "flex";
+
+        yesBtn.onclick = () => {
+          confirmModal.style.display = "none";
+
+          // Play sound
+          dangerSound.currentTime = 0;
+          dangerSound.play();
+
+          // Flash background
+          document.querySelector(".card").classList.add("danger-flash");
+
+          // Danger pulse animation
+          resultEl.classList.add("danger");
+          caloriesEl.classList.add("danger");
+
+          // Log selection
+          logSelection(finalChoice.name);
+
+          // Remove flash after animation
+          setTimeout(() => {
+            document.querySelector(".card").classList.remove("danger-flash");
+          }, 1500);
+        };
+
+        noBtn.onclick = () => {
+          confirmModal.style.display = "none";
+          resultEl.classList.remove("danger");
+          caloriesEl.classList.remove("danger");
+        };
+
+      } else {
+        // Normal picks log immediately
+        logSelection(finalChoice.name);
+      }
+
     }, SPIN_DURATION_MS);
   }
 
