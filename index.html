@@ -79,22 +79,30 @@
        3px  3px 0 black;
   }
 
+  /* Twin Peaks chevron background (softened) */
   .card {
     border-radius: 20px;
     box-shadow: var(--shadow);
     padding: 32px 24px;
     position: relative;
     overflow: hidden;
-    background-image: url('0.jpg');
-    background-size: cover;
-    background-position: center;
+
+    background:
+      repeating-linear-gradient(
+        135deg,
+        #000 0px,
+        #000 20px,
+        #fff 20px,
+        #fff 40px
+      );
   }
 
+  /* Soft cream overlay so chevron isn't too loud */
   .card::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: rgba(255, 248, 225, 0.75);
+    background: rgba(255, 248, 225, 0.70);
   }
 
   .card > * { position: relative; }
@@ -421,6 +429,10 @@
 
       caloriesEl.textContent = `${finalChoice.calories} calories`;
 
+      // Update modal text with name + calories
+      document.querySelector(".modal-content p").textContent =
+        `Select ${finalChoice.name} (${finalChoice.calories} calories) for dinner?`;
+
       confirmModal.style.display = "flex";
 
       yesBtn.onclick = () => {
@@ -455,4 +467,3 @@
 </script>
 </body>
 </html>
-
