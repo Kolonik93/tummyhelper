@@ -48,7 +48,6 @@
     text-align: center;
   }
 
-  /* Eyebrow header using Chivo with outline */
   .eyebrow {
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -64,7 +63,6 @@
        2px  2px 0 black;
   }
 
-  /* Main Pet Sounds-style header using Cooper Black */
   h1 {
     font-family: "Cooper Black", serif;
     font-weight: 900;
@@ -79,14 +77,12 @@
        3px  3px 0 black;
   }
 
-  /* Twin Peaks chevron background (softened) */
   .card {
     border-radius: 20px;
     box-shadow: var(--shadow);
     padding: 32px 24px;
     position: relative;
     overflow: hidden;
-
     background:
       repeating-linear-gradient(
         135deg,
@@ -94,10 +90,16 @@
         #000 20px,
         #fff 20px,
         #fff 40px
+      ),
+      repeating-linear-gradient(
+        45deg,
+        #000 0px,
+        #000 20px,
+        #fff 20px,
+        #fff 40px
       );
   }
 
-  /* Soft cream overlay so chevron isn't too loud */
   .card::before {
     content: '';
     position: absolute;
@@ -119,9 +121,13 @@
   }
 
   .result.placeholder {
-    color: var(--muted);
+    color: #fff;
     font-weight: 400;
     font-size: 18px;
+    background: rgba(205, 92, 92, 0.85); /* IndianRed bubble */
+    padding: 10px 16px;
+    border-radius: 12px;
+    display: inline-block;
   }
 
   .result.pop {
@@ -185,10 +191,13 @@
   }
 
   #crazyBtn {
-    background: var(--accent-2);
-    box-shadow: 0 6px 16px rgba(242, 201, 76, 0.30);
+    background: #CD5C5C; /* IndianRed */
+    box-shadow: 0 6px 16px rgba(205, 92, 92, 0.35);
   }
-  #crazyBtn:hover { background: var(--accent-2-dark); }
+
+  #crazyBtn:hover {
+    background: #b94f4f;
+  }
 
   footer {
     margin-top: 22px;
@@ -348,6 +357,14 @@
   const noBtn = document.getElementById("noBtn");
 
   const dangerSound = new Audio("danger.mp3");
+  const clickSound = new Audio("click.mp3");
+  const revealSound = new Audio("reveal.mp3");
+  const modalSound = new Audio("modal.mp3");
+  const crazySound = new Audio("crazy.mp3");
+  const glitchSound = new Audio("glitch.mp3");
+  const whooshSound = new Audio("whoosh.mp3");
+  const ambientSound = new Audio("ambient.mp3");
+  ambientSound.loop = true;
 
   const graphEl = document.getElementById("graph");
 
@@ -408,6 +425,9 @@
 
     resultEl.classList.add("spinning");
 
+    whooshSound.currentTime = 0;
+    whooshSound.play();
+
     const spinInterval = setInterval(() => {
       const flash = filtered[Math.floor(Math.random() * filtered.length)];
       resultEl.textContent = flash.name;
@@ -421,6 +441,9 @@
       resultEl.textContent = finalChoice.name;
       resultEl.classList.add("pop");
 
+      revealSound.currentTime = 0;
+      revealSound.play();
+
       characterEl.textContent =
         finalChoice.category === "calorie"
           ? HEALTHY_CHARACTER
@@ -429,18 +452,26 @@
 
       caloriesEl.textContent = `${finalChoice.calories} calories`;
 
-      // Update modal text with name + calories
       document.querySelector(".modal-content p").textContent =
         `Select ${finalChoice.name} (${finalChoice.calories} calories) for dinner?`;
+
+      modalSound.currentTime = 0;
+      modalSound.play();
 
       confirmModal.style.display = "flex";
 
       yesBtn.onclick = () => {
         confirmModal.style.display = "none";
 
+        clickSound.currentTime = 0;
+        clickSound.play();
+
         if (finalChoice.calories > 1000) {
           dangerSound.currentTime = 0;
           dangerSound.play();
+
+          glitchSound.currentTime = 0;
+          glitchSound.play();
 
           document.querySelector(".card").classList.add("danger-flash");
           resultEl.classList.add("danger");
@@ -456,6 +487,10 @@
 
       noBtn.onclick = () => {
         confirmModal.style.display = "none";
+
+        clickSound.currentTime = 0;
+        clickSound.play();
+
         resultEl.classList.remove("danger");
         caloriesEl.classList.remove("danger");
       };
@@ -463,7 +498,17 @@
     }, SPIN_DURATION_MS);
   }
 
-  document.getElementById("crazyBtn").onclick = () => pickDinner();
+  document.getElementById("crazyBtn").onclick = () => {
+    crazySound.currentTime = 0;
+    crazySound.play();
+
+    if (ambientSound.paused) {
+      ambientSound.currentTime = 0;
+      ambientSound.play();
+    }
+
+    pickDinner();
+  };
 </script>
 </body>
 </html>
