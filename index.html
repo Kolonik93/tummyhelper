@@ -141,8 +141,6 @@
 
   .actions {
     display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
     justify-content: center;
     margin-top: 26px;
   }
@@ -162,17 +160,11 @@
     transform: translateY(1px) scale(0.98);
   }
 
-  #pickBtn {
-    background: var(--accent);
-    box-shadow: 0 6px 16px rgba(199, 211, 111, 0.35);
-  }
-  #pickBtn:hover { background: var(--accent-dark); }
-
-  #calorieBtn, #crazyBtn {
+  #crazyBtn {
     background: var(--accent-2);
     box-shadow: 0 6px 16px rgba(242, 201, 76, 0.30);
   }
-  #calorieBtn:hover, #crazyBtn:hover { background: var(--accent-2-dark); }
+  #crazyBtn:hover { background: var(--accent-2-dark); }
 
   footer {
     margin-top: 22px;
@@ -277,8 +269,6 @@
       <div id="calories" class="calories"></div>
 
       <div class="actions">
-        <button id="pickBtn">Jesus take the wheel</button>
-        <button id="calorieBtn">🏃 I have a calorie goal</button>
         <button id="crazyBtn">😂 Is that crazy?!</button>
       </div>
     </div>
@@ -388,13 +378,8 @@
 
   renderGraph();
 
-  function pickDinner(filterCategory = null) {
-    let filtered = filterCategory
-      ? defaultDinners.filter(d => d.category === filterCategory)
-      : defaultDinners;
-
-    if (filtered.length === 0) return;
-
+  function pickDinner() {
+    const filtered = defaultDinners;
     const finalChoice = filtered[Math.floor(Math.random() * filtered.length)];
 
     resultEl.classList.remove("placeholder", "pop", "danger");
@@ -425,50 +410,40 @@
 
       caloriesEl.textContent = `${finalChoice.calories} calories`;
 
-      // Danger Zone: requires confirmation
-      if (finalChoice.calories > 1000) {
-        confirmModal.style.display = "flex";
+      // ALWAYS ask for confirmation
+      confirmModal.style.display = "flex";
 
-        yesBtn.onclick = () => {
-          confirmModal.style.display = "none";
+      yesBtn.onclick = () => {
+        confirmModal.style.display = "none";
 
-          // Play sound
+        // Danger Zone effects only if >1000
+        if (finalChoice.calories > 1000) {
           dangerSound.currentTime = 0;
           dangerSound.play();
 
-          // Flash background
           document.querySelector(".card").classList.add("danger-flash");
-
-          // Danger pulse animation
           resultEl.classList.add("danger");
           caloriesEl.classList.add("danger");
 
-          // Log selection
-          logSelection(finalChoice.name);
-
-          // Remove flash after animation
           setTimeout(() => {
             document.querySelector(".card").classList.remove("danger-flash");
           }, 1500);
-        };
+        }
 
-        noBtn.onclick = () => {
-          confirmModal.style.display = "none";
-          resultEl.classList.remove("danger");
-          caloriesEl.classList.remove("danger");
-        };
-
-      } else {
-        // Normal picks log immediately
+        // Log ONLY when user selects YES
         logSelection(finalChoice.name);
-      }
+      };
+
+      noBtn.onclick = () => {
+        confirmModal.style.display = "none";
+        resultEl.classList.remove("danger");
+        caloriesEl.classList.remove("danger");
+      };
 
     }, SPIN_DURATION_MS);
   }
 
-  document.getElementById("pickBtn").onclick = () => pickDinner();
-  document.getElementById("calorieBtn").onclick = () => pickDinner("calorie");
-  document.getElementById("crazyBtn").onclick = () => pickDinner("crazy");
+  document.getElementById("crazyBtn").onclick = () => pickDinner();
 </script>
 </body>
 </html>
